@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        region = 'us-west-2'
+        clusterName = 'jenkins'
+    }
     agent any
     stages {
         stage('Install dependencies') {
@@ -25,5 +29,29 @@ pipeline {
                 }
             }
         }
+        stage('Update kubeconfig') {
+          steps {
+            withAWS(credentials: 'Jenkins AWS', region: region) {
+              sh 'aws eks --region=${region} update-kubeconfig --name ${clusterName}'
+            }
+          }
+        }    
+        stage('Deploy cluster') {
+          steps {
+            withAWS(credentials: 'Jenkins AWS', region: region) {
+              sh 'kubectl config use-context arn:aws:eks:us-west-2:395607980508:cluster/jenkins'
+              sh 'kubectl apply -f deployment.yml'
+              sh 'kubectl get service'
+            }
+          }
+        }    
+        stage('Check rollout status') {
+          steps {
+            withAWS(credentials: 'Jenkins AWS', region: region) {
+              sh 'kubectl rollout status deployments/capstone-deployment'
+            }
+          }
+        }    
+
     }
 }
