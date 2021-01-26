@@ -42,7 +42,7 @@ pipeline {
               sh 'kubectl config use-context arn:aws:eks:us-west-2:395607980508:cluster/jenkins'
               sh 'kubectl apply -f deployment.yml'
               sh 'kubectl get service'
-              sh 'service capstone-service'
+              sh 'kubectl describe service capstone-service'
             }
           }
         }    
