@@ -1,9 +1,14 @@
 pipeline {
-    agent { docker { image 'python:3.5.1' } }
+    agent any
     stages {
-        stage('build') {
+        stage('Install dependencies') {
             steps {
-                sh 'python --version'
+                sh 'make install'
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh 'make lint'
             }
         }
     }
