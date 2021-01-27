@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Upload docker image') {
             when {
-              branch 'master'
+              branch 'main'
             }
             steps {
                 withDockerRegistry([url: "", credentialsId: "dockerhub-jenkins"]) {
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Update kubeconfig') {
           when {
-              branch 'master'
+              branch 'main'
           }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
@@ -47,7 +47,7 @@ pipeline {
         }    
         stage('Deploy cluster') {
           when {
-              branch 'master'
+              branch 'main'
           }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
@@ -60,7 +60,7 @@ pipeline {
         }    
         stage('Rollout and check status') {
           when {
-              branch 'master'
+              branch 'main'
           }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
