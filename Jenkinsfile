@@ -64,7 +64,7 @@ pipeline {
           }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
-              sh 'kubectl set image -f deployment.yml'
+              sh 'kubectl set env deployment capstone-deployment DEPLOY_DATE="$(date)"'
               sh 'kubectl rollout status deployments/capstone-deployment'
               sh 'kubectl get deployment capstone-deployment'
             }
