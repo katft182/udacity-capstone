@@ -4,6 +4,9 @@ pipeline {
         clusterName = 'jenkins'
     }
     agent any
+    options {
+      disableConcurrentBuilds()
+    }
     stages {
         stage('Install dependencies') {
             steps {
@@ -22,6 +25,9 @@ pipeline {
             }
         }
         stage('Upload docker image') {
+            when {
+              branch 'master'
+            }
             steps {
                 withDockerRegistry([url: "", credentialsId: "dockerhub-jenkins"]) {
                     sh 'docker tag capstone katft/capstone'
@@ -30,6 +36,9 @@ pipeline {
             }
         }
         stage('Update kubeconfig') {
+          when {
+              branch 'master'
+          }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
               sh 'aws eks --region=${region} update-kubeconfig --name ${clusterName}'
@@ -37,6 +46,9 @@ pipeline {
           }
         }    
         stage('Deploy cluster') {
+          when {
+              branch 'master'
+          }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
               sh 'kubectl config use-context arn:aws:eks:us-west-2:395607980508:cluster/jenkins'
@@ -46,10 +58,15 @@ pipeline {
             }
           }
         }    
-        stage('Check rollout status') {
+        stage('Rollout and check status') {
+          when {
+              branch 'master'
+          }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
+              sh 'kubectl set image'
               sh 'kubectl rollout status deployments/capstone-deployment'
+              sh 'kubectl get deployment capstone-deployment'
             }
           }
         }    
