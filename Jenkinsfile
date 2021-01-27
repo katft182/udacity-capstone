@@ -64,7 +64,7 @@ pipeline {
           }
           steps {
             withAWS(credentials: 'Jenkins AWS', region: region) {
-              sh 'kubectl set image'
+              sh 'kubectl set image -f deployment.yml'
               sh 'kubectl rollout status deployments/capstone-deployment'
               sh 'kubectl get deployment capstone-deployment'
             }
