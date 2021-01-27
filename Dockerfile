@@ -14,5 +14,7 @@ RUN pip install --upgrade pip &&\
 # Expose port 8080
 EXPOSE 8080
 
+WRONG COMMAND
+
 # Run app.py at container launch
 CMD ["python", "app.py"]
